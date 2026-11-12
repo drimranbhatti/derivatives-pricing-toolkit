@@ -35,7 +35,7 @@ All Fourier pricing goes through one Lewis (2001) engine. A model only needs to 
 ## Quick start
 
 ```bash
-git clone https://github.com/mimran666/derivatives-pricing-toolkit.git
+git clone https://github.com/drimranbhatti/derivatives-pricing-toolkit.git
 cd derivatives-pricing-toolkit
 pip install -e ".[notebooks,dev]"
 pytest                      # 14 tests
