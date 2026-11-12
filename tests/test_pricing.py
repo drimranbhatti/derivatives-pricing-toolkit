@@ -102,3 +102,16 @@ def test_short_rate_models():
     fit, rmse = rates.calibrate(Ts, rates.zero_yield(rates.cir_zcb(Ts, p), Ts))
     assert rmse < 1e-6
     assert rates.simulate_cir(p, 1.0, n_paths=100).min() >= 0
+
+
+def test_delta_hedge_error_shrinks_with_rebalancing():
+    from derivpricer import hedging
+    sd = [hedging.delta_hedge_pnl(100, 100, 0.25, 0.03, 0.2, n, n_paths=20_000, seed=1).std() for n in (13, 52, 208)]
+    assert sd[0] > sd[1] > sd[2]
+    assert abs(sd[0] / sd[2] - 4) < 0.6          # error falls like 1/sqrt(n)
+
+
+def test_delta_hedge_is_fair_on_average():
+    from derivpricer import hedging
+    pnl = hedging.delta_hedge_pnl(100, 100, 0.25, 0.03, 0.2, 100, n_paths=40_000, seed=2)
+    assert abs(pnl.mean()) < 3 * pnl.std() / np.sqrt(len(pnl)) + 0.01

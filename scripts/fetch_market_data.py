@@ -47,8 +47,15 @@ def treasury_curve():
     return df
 
 
+def spy_vix_history(start="2006-01-01", end="2026-11-01"):
+    px = yf.download(["SPY", "^VIX", "^IRX"], start=start, end=end, auto_adjust=True, progress=False)["Close"]
+    px.columns = ["spy" if c == "SPY" else "vix" if c == "^VIX" else "tbill" for c in px.columns]
+    return px.dropna().round(4)
+
+
 if __name__ == "__main__":
     DATA.mkdir(exist_ok=True)
     option_surface().to_csv(DATA / "spy_call_surface.csv", index=False)
     treasury_curve().to_csv(DATA / "treasury_curve.csv", index=False)
+    spy_vix_history().to_csv(DATA / "spy_vix_daily.csv")
     print("Snapshots written to", DATA)
